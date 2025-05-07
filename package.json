@@ -1,0 +1,69 @@
+{
+  "name": "pwdr-app",
+  "author": "Apollo917",
+  "homepage": "https://github.com/Apollo917/pwdr-app",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Generate strong, repeatable passwords using a secret phrase. No servers. Your data stays encrypted and private on your device.",
+  "maintainers": [
+    {
+      "name": "Apollo917",
+      "url": "https://github.com/Apollo917"
+    }
+  ],
+  "keywords": [
+    "pwdr",
+    "pwd",
+    "password",
+    "chrome extension"
+  ],
+  "bugs": {
+    "url": "https://github.com/Apollo917/pwdr-app/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Apollo917/pwdr-app.git"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "build": "tsc -b && vite build",
+    "build-extension": "tsc -b .chrome-extension && vite build && node .chrome-extension/build.js"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.0.0",
+    "@hookform/resolvers": "^5.0.1",
+    "pwdr": "^2.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.55.0",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@eslint/js": "^9.21.0",
+    "@types/chrome": "^0.0.310",
+    "@types/node": "^22.13.14",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.27.0",
+    "@typescript-eslint/parser": "^8.27.0",
+    "@vitejs/plugin-react-swc": "^3.8.0",
+    "eslint": "^9.23.0",
+    "eslint-import-resolver-typescript": "^4.2.2",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-dom": "^1.37.3",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-react-x": "^1.37.3",
+    "globals": "^15.15.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "6.2.6"
+  }
+}
