@@ -2,38 +2,37 @@
 
 # pwdr app
 
-Generate strong, repeatable passwords using a secret phrase and a secret key — all offline, with zero tracking
+Generate strong, repeatable passwords using a secret phrase and key — all offline, with zero tracking
 
 ![pwdr app logo](.readme/logo-w-bg.png)
 
 </div>
 
-## ✨ Features
+## ✨ Main features
 
 ### 🔑 Deterministic Password Generation
 
-Uses a combination of your secret phrase and secret key to generate the same strong password every time
+Generate the same strong password every time using a combination of your secret phrase and key
 
 ### 🔒 Encrypted Local Storage
 
-Your secret phrase is encrypted and securely stored on your device, so you only need to remember your password and
-secret key
+Your secret phrases are encrypted and securely stored on your device
 
 ### 🧠 Convenient Access
 
-The app requires a password to unlock your saved secret phrase. No need to retype it every time
+Unlock your secret phrase vault with a PIN — no need to retype your secret phrase each time.
 
 ### 🚫 No Servers, No Tracking
 
-Everything happens locally in your browser. This app doesn’t send or store any data externally
+Everything happens locally on your device. No data is sent or stored externally
 
 ## 🛠 How It Works
 
-- Set a PIN code to protect your encrypted secret phrase
-- Unlock the pwdr app by entering the PIN from the previous step
-- Add a secret phrase — it’s encrypted and saved in your browser's local storage
-- Input a secret key when needed to generate consistent, strong passwords
-- Copy your generated password — ready to use
+- Set a PIN to protect your encrypted secret phrase vault
+- Unlock your vault using the PIN
+- Add a secret phrase — it's encrypted and stored locally on your device
+- Enter a secret key to generate a consistent, strong password
+- Copy the generated password — ready to use
 
 ## 📦 Under the Hood
 
