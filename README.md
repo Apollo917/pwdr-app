@@ -20,7 +20,7 @@ Your secret phrases are encrypted and securely stored on your device
 
 ### 🧠 Convenient Access
 
-Unlock your secret phrase vault with a PIN — no need to retype your secret phrase each time.
+Unlock your secret phrase vault with a PIN — no need to retype your secret phrase each time
 
 ### 🚫 No Servers, No Tracking
 
