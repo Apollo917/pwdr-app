@@ -4,6 +4,8 @@ import { erase } from 'pwdr';
 
 // Types
 
+export type KeyTimeComplexity = 'fast' | 'balanced' | 'strong' | 'paranoid';
+
 export interface Encrypted {
   data: string;
   iv: string;
@@ -14,7 +16,7 @@ type Base64StringToUint8Array = (str: string) => Uint8Array;
 type GenerateRandomUint8Array = (size: number) => Uint8Array;
 type GenerateId = () => string;
 type GenerateSalt = () => string;
-type GenerateKey = (pin: Uint8Array, salt: string) => Promise<CryptoKey>;
+type GenerateKey = (pin: Uint8Array, salt: string, complexity: KeyTimeComplexity) => Promise<CryptoKey>;
 type Encrypt = (key: CryptoKey, data: Uint8Array) => Promise<Encrypted>;
 type Decrypt = (key: CryptoKey, encrypted: Encrypted) => Promise<Uint8Array>;
 
@@ -32,6 +34,13 @@ export interface UseCrypto {
 // Constants
 
 const ENCRYPTION_ALGORITHM = 'AES-GCM';
+
+const COMPLEXITY_LEVELS: Record<KeyTimeComplexity, number> = {
+  fast: 250_000,
+  balanced: 500_000,
+  strong: 1_000_000,
+  paranoid: 5_000_000
+}
 
 // Hooks
 
@@ -57,21 +66,21 @@ export const useCrypto = (): UseCrypto => {
     return toBase64String(generateRandomUint8Array(16));
   }, [toBase64String, generateRandomUint8Array]);
 
-  const generateKey: GenerateKey = useCallback(async (pin, salt) => {
+  const generateKey: GenerateKey = useCallback(async (pin, salt, complexity) => {
     const derivationAlgo = 'PBKDF2';
     const baseKey = await crypto.subtle.importKey('raw', pin, { name: derivationAlgo }, false, ['deriveKey']);
     erase(pin);
     return crypto.subtle.deriveKey(
-      {
-        name: derivationAlgo,
-        salt: base64StringToUint8Array(salt),
-        iterations: 1_000_000,
-        hash: 'SHA-512',
-      },
-      baseKey,
-      { name: ENCRYPTION_ALGORITHM, length: 256 },
-      true,
-      ['encrypt', 'decrypt'],
+        {
+          name: derivationAlgo,
+          salt: base64StringToUint8Array(salt),
+          iterations: COMPLEXITY_LEVELS[complexity],
+          hash: 'SHA-512',
+        },
+        baseKey,
+        { name: ENCRYPTION_ALGORITHM, length: 256 },
+        true,
+        ['encrypt', 'decrypt'],
     );
   }, [base64StringToUint8Array]);
 
@@ -87,7 +96,7 @@ export const useCrypto = (): UseCrypto => {
     const data = base64StringToUint8Array(encrypted.data);
 
     return await crypto.subtle.decrypt({ name: ENCRYPTION_ALGORITHM, iv }, key, data)
-      .then(data => new Uint8Array(data));
+        .then(data => new Uint8Array(data));
   }, [base64StringToUint8Array]);
 
   return {

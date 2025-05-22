@@ -11,6 +11,7 @@ import { Encrypted } from './useCrypto';
 
 export type FetchPhrases = () => Promise<Phrase[]>;
 export type SavePhrase = (phrase: Phrase) => Promise<Phrase>;
+export type SavePhrases = (phrases: Phrase[]) => Promise<Phrase[]>;
 export type EditPhrase = (phrase: Phrase, editData: EditPhraseData) => Promise<void>;
 export type RemovePhrase = (phrase: Phrase) => Promise<void>;
 export type RemoveAllPhrases = () => Promise<void>;
@@ -34,6 +35,7 @@ export interface UsePhrases {
   phrases: Phrase[];
   fetchPhrases: FetchPhrases,
   savePhrase: SavePhrase;
+  savePhrases: SavePhrases;
   editPhrase: EditPhrase;
   removePhrase: RemovePhrase;
   removeAllPhrases: RemoveAllPhrases;
@@ -74,9 +76,9 @@ const PhrasesContextProvider: DefaultContextProvider = ({ children }) => {
   }, [phrases, setPhrases]);
 
   return (
-    <PhrasesContext value={value}>
-      {children}
-    </PhrasesContext>
+      <PhrasesContext value={value}>
+        {children}
+      </PhrasesContext>
   );
 };
 
@@ -109,10 +111,17 @@ export const usePhrases = (): UsePhrases => {
     return phrasesArr;
   }, [getPhrasesKeys, getItems]);
 
-  const savePhrase: SavePhrase = useCallback(async (phrase: Phrase) => {
+  const savePhrase: SavePhrase = useCallback(async (phrase) => {
     await saveItems({ [generatePhraseStorageKey(phrase)]: phrase });
     setPhrases(p => [...p, phrase]);
-    return Promise.resolve(phrase);
+    return phrase;
+  }, [saveItems, setPhrases]);
+
+  const savePhrases: SavePhrases = useCallback(async (phrases) => {
+    const items = phrases.reduce((acc, p) => ({ ...acc, [generatePhraseStorageKey(p)]: p }), {});
+    await saveItems(items);
+    setPhrases(p => [...p, ...phrases]);
+    return phrases;
   }, [saveItems, setPhrases]);
 
   const editPhrase: EditPhrase = useCallback(async (phrase, editData) => {
@@ -134,8 +143,18 @@ export const usePhrases = (): UsePhrases => {
   const removeAllPhrases: RemoveAllPhrases = useCallback(async () => {
     const keys = await getPhrasesKeys();
     await removeItems(keys);
-  }, [getPhrasesKeys, removeItems]);
+    setPhrases([]);
+  }, [getPhrasesKeys, removeItems, setPhrases]);
 
 
-  return { phrases, fetchPhrases, savePhrase, editPhrase, removePhrase, removeAllPhrases, PhrasesContextProvider };
+  return {
+    phrases,
+    fetchPhrases,
+    savePhrase,
+    savePhrases,
+    editPhrase,
+    removePhrase,
+    removeAllPhrases,
+    PhrasesContextProvider
+  };
 };

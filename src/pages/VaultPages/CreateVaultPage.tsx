@@ -1,18 +1,18 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Box, Button } from "@mui/material";
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { object, ref, string } from 'yup';
 
-import logo from 'Assets/img/logo.png';
 import locale from 'Assets/locale';
-import { Button } from 'Components/Controls/Button';
-import { Input } from 'Components/Controls/Input';
+import { PasswordField } from "Components/Controls/PasswordField";
 import { Page } from 'Components/Layout/Page';
-import { Spacer } from 'Components/Layout/Spacer';
 import { useErrorHandler } from 'Hooks/useHandleError';
 import { useVault } from 'Hooks/useVault';
-import { ContentContainer, Logo, Prompt, VaultForm } from 'Pages/VaultPages/style';
+import { VaultPageLayout } from "Pages/VaultPages/VaultPageLayout";
+import { PIN_CODE } from "Utils/constants";
+
 
 // Types
 
@@ -25,26 +25,35 @@ interface CreateVaultFormData {
 
 const formValidationSchema = object({
   pin: string()
-    .trim()
-    .required(locale.validationPinCodeRequired)
-    .min(8, ({ min }) => `${locale.validationMinLength} ${min}`),
+      .trim()
+      .required(locale.validationPinCodeRequired)
+      .min(PIN_CODE.minLength, ({ min }) => `${locale.validationMinLength} ${min}`),
   pinConfirm: string()
-    .trim()
-    .required(locale.validationPinCodeConfirmRequired)
-    .oneOf([ref('pin')], locale.validationPinCodeConfirmMustMatch),
+      .trim()
+      .required(locale.validationPinCodeConfirmRequired)
+      .oneOf([ref('pin')], locale.validationPinCodeConfirmMustMatch),
 }).required();
 
 // Components
 
 export const CreateVaultPage = () => {
+  const autofocusRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { createVault } = useVault();
   const { handleError } = useErrorHandler();
-  const { register, handleSubmit, reset, formState: { isValid, errors } } = useForm<CreateVaultFormData>({
+  const { control, handleSubmit, reset, formState: { isValid } } = useForm<CreateVaultFormData>({
     mode: 'all',
     resolver: yupResolver(formValidationSchema),
+    defaultValues: {
+      pin: '',
+      pinConfirm: ''
+    }
   });
 
+
+  useEffect(() => {
+    autofocusRef.current?.focus();
+  }, []);
 
   const resetFormState = useCallback(() => {
     setIsLoading(false);
@@ -56,29 +65,37 @@ export const CreateVaultPage = () => {
     createVault(pin.trim()).catch(handleError).finally(resetFormState);
   }, [createVault, handleError, resetFormState]);
 
+
   return (
-    <Page caption="pwdr">
-      <ContentContainer>
-        <Spacer />
-        <Logo src={logo} alt="pwdr-logo" />
-        <Spacer />
-        <Prompt>
-          {locale.createNewVaultPrompt}
-        </Prompt>
-        <Spacer />
-        <VaultForm onSubmit={handleSubmit(onSubmit)} autoComplete="off">
-          <Input type="password" placeholder={locale.placeholderPinCode} {...register('pin')}
-                 errors={errors.pin?.message} />
-          <Spacer size={5} />
-          <Input type="password" placeholder={locale.placeholderPinCodeConfirm} {...register('pinConfirm')}
-                 errors={errors.pinConfirm?.message}
-          />
-          <Spacer size={5} />
-          <Button type="submit" loading={isLoading} disabled={!isValid}>
-            {locale.btnCreate}
-          </Button>
-        </VaultForm>
-      </ContentContainer>
-    </Page>
+      <Page caption="pwdr">
+        <VaultPageLayout prompt={locale.createNewVaultPrompt}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+            <Controller name="pin" control={control} render={({ field, fieldState }) => (
+                <PasswordField {...field}
+                               inputRef={autofocusRef}
+                               error={fieldState.invalid}
+                               helperText={fieldState.error?.message ?? ' '}
+                               label={locale.labelPinCode}
+                               size="small"
+                               margin="dense"
+                               fullWidth
+                />
+            )}/>
+            <Controller name="pinConfirm" control={control} render={({ field, fieldState }) => (
+                <PasswordField {...field}
+                               error={fieldState.invalid}
+                               helperText={fieldState.error?.message ?? ' '}
+                               label={locale.labelPinCodeConfirm}
+                               size="small"
+                               margin="dense"
+                               fullWidth
+                />
+            )}/>
+            <Button type="submit" variant="contained" loading={isLoading} disabled={!isValid} fullWidth>
+              {locale.btnCreate}
+            </Button>
+          </Box>
+        </VaultPageLayout>
+      </Page>
   );
 };

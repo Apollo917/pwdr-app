@@ -1,10 +1,13 @@
-import { ButtonHTMLAttributes, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { Button } from "@mui/material";
+import { ButtonProps } from "@mui/material/Button";
 
 import locale from 'Assets/locale';
 
 // Types
 
-export interface ParanoidConfirmButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ParanoidConfirmButtonProps extends ButtonProps {
   onConfirm: () => void;
   confirmSteps?: string[];
   cancelStep?: string;
@@ -27,14 +30,14 @@ const DEFAULT_CONFIRM_STEPS = [locale.confirmStepConfirm];
 // Components
 
 export const ParanoidConfirmButton: T = ({
-  onConfirm,
-  confirmSteps = DEFAULT_CONFIRM_STEPS,
-  cancelStep = DEFAULT_CANCEL_STEP,
-  confirmTimeout = CONFIRM_TIMEOUT,
-  cancelTimeout = CANCEL_TIMEOUT,
-  type = 'button',
-  ...props
-}) => {
+                                           onConfirm,
+                                           confirmSteps = DEFAULT_CONFIRM_STEPS,
+                                           cancelStep = DEFAULT_CANCEL_STEP,
+                                           confirmTimeout = CONFIRM_TIMEOUT,
+                                           cancelTimeout = CANCEL_TIMEOUT,
+                                           type = 'button',
+                                           ...props
+                                         }) => {
   const cancelTimeoutRef = useRef<NodeJS.Timeout>(null);
   const confirmTimeoutRef = useRef<NodeJS.Timeout>(null);
   const [steps, setSteps] = useState<string[]>([]);
@@ -87,8 +90,8 @@ export const ParanoidConfirmButton: T = ({
 
 
   return (
-    <button {...props} onClick={onClick} type={isFinalStep ? type : 'button'}>
-      {steps[stepIndex]}
-    </button>
+      <Button {...props} onClick={onClick} type={isFinalStep ? type : 'button'}>
+        {steps[stepIndex]}
+      </Button>
   );
 };

@@ -1,20 +1,19 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Box, Button } from "@mui/material";
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string } from 'yup';
 
-import logo from 'Assets/img/logo.png';
 import locale from 'Assets/locale';
-import { Button } from 'Components/Controls/Button';
 import { DestroyVaultMultiConfirm } from 'Components/Controls/DestroyVaultMultiConfirm';
-import { Input } from 'Components/Controls/Input';
+import { PasswordField } from "Components/Controls/PasswordField";
 import { Page } from 'Components/Layout/Page';
-import { Spacer } from 'Components/Layout/Spacer';
+import { Spacer } from "Components/Layout/Spacer";
 import { useErrorHandler } from 'Hooks/useHandleError';
 import { InvalidPinError, useVault } from 'Hooks/useVault';
-import { ContentContainer, Logo, Prompt, VaultForm } from 'Pages/VaultPages/style';
+import { VaultPageLayout } from "Pages/VaultPages/VaultPageLayout";
 
 // Types
 
@@ -31,21 +30,22 @@ const formValidationSchema = object({
 // Components
 
 export const UnlockVaultPage = () => {
+  const autofocusRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { unlockVault } = useVault();
   const { handleError } = useErrorHandler();
-  const {
-    register,
-    setValue,
-    setError,
-    handleSubmit,
-    reset,
-    formState: { isValid, errors },
-  } = useForm<UnlockVaultFormData>({
+  const { control, handleSubmit, setValue, setError, reset, formState: { isValid }, } = useForm<UnlockVaultFormData>({
     mode: 'all',
     resolver: yupResolver(formValidationSchema),
+    defaultValues: {
+      pin: ''
+    }
   });
 
+
+  useEffect(() => {
+    autofocusRef.current?.focus()
+  }, []);
 
   const resetLoadingState = useCallback(() => {
     setIsLoading(false);
@@ -63,51 +63,50 @@ export const UnlockVaultPage = () => {
   const onSubmit: SubmitHandler<UnlockVaultFormData> = useCallback(({ pin }) => {
     setIsLoading(true);
     unlockVault(pin.trim())
-      .then(resetFormState)
-      .catch((err) => {
-        clearFormFields();
-        if (err instanceof Error) {
-          handleError(err);
-        }
-        if (err instanceof InvalidPinError) {
-          setError('pin', { message: locale.errorMessageInvalidPinCode });
-        }
-      })
-      .finally(resetLoadingState);
+        .then(resetFormState)
+        .catch((err: Error) => {
+          clearFormFields();
+          if (err instanceof InvalidPinError) {
+            setError('pin', { message: locale.errorMessageInvalidPinCode });
+          } else {
+            handleError(err);
+          }
+        })
+        .finally(resetLoadingState);
   }, [unlockVault, resetFormState, resetLoadingState, handleError, clearFormFields, setError]);
 
 
   return (
-    <Page caption="pwdr">
-      <ContentContainer>
-        <Spacer />
-        <Logo src={logo} alt="pwdr-logo" />
-        <Spacer />
-        <Prompt>
-          {locale.unlockVaultPrompt}
-        </Prompt>
-        <Spacer />
-        <VaultForm onSubmit={handleSubmit(onSubmit)} autoComplete="off">
-          <Input type="password" placeholder={locale.placeholderPinCode} {...register('pin')}
-                 errors={errors.pin?.message} />
-          <Spacer size={5} />
-          <Button type="submit" loading={isLoading} disabled={!isValid}>
-            {locale.btnUnlock}
-          </Button>
-        </VaultForm>
-        <Spacer size={10} />
-        <DestroyVaultWrapper>
-          <DestroyVaultMultiConfirm />
-        </DestroyVaultWrapper>
-      </ContentContainer>
-    </Page>
+      <Page caption="pwdr">
+        <VaultPageLayout prompt={locale.unlockVaultPrompt}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+            <Controller name="pin" control={control} render={({ field, fieldState }) => (
+                <PasswordField {...field}
+                               inputRef={autofocusRef}
+                               error={fieldState.invalid}
+                               helperText={fieldState.error?.message ?? ' '}
+                               label={locale.labelPinCode}
+                               size="small"
+                               margin="dense"
+                               fullWidth
+                />
+            )}/>
+            <Button type="submit" variant="contained" loading={isLoading} disabled={!isValid} fullWidth>
+              {locale.btnUnlock}
+            </Button>
+          </Box>
+          <Spacer size={10}/>
+          <DestroyVaultContainer>
+            <DestroyVaultMultiConfirm size="small"/>
+          </DestroyVaultContainer>
+        </VaultPageLayout>
+      </Page>
   );
 };
 
 // Styled
 
-const DestroyVaultWrapper = styled.div`
+const DestroyVaultContainer = styled.div`
     width: 100%;
-    padding: 0 25px;
     text-align: end;
 `;

@@ -1,27 +1,34 @@
 import { ReactElement, useCallback } from 'react';
 
-import styled from '@emotion/styled';
+import { ButtonProps } from "@mui/material/Button";
 
 import locale from 'Assets/locale';
-import { color, nonSelectableContentStyle } from 'Assets/style';
 import { ParanoidConfirmButton } from 'Components/Controls/ParanoidConfirmButton';
 import { useErrorHandler } from 'Hooks/useHandleError';
 import { Phrase } from 'Hooks/usePhrases';
 import { useVault } from 'Hooks/useVault';
 
-
 // Types
 
-export interface RemovePhraseMultiConfirmProps {
+export interface RemovePhraseMultiConfirmProps extends ButtonProps {
   phrase?: Phrase | null;
   onRemoved: () => void;
 }
 
 type T = (props: RemovePhraseMultiConfirmProps) => ReactElement
 
+// Constants
+
+const CANCEL_STEP = locale.confirmStepCancelDeletion;
+const CONFIRM_STEPS = [
+  locale.confirmStepDeletePhrase,
+  locale.confirmStepYesIamSure,
+  locale.confirmStepDeleteIt,
+];
+
 // Components
 
-export const RemovePhraseMultiConfirm: T = ({ phrase, onRemoved }) => {
+export const RemovePhraseMultiConfirm: T = ({ phrase, onRemoved, ...props }) => {
   const { removePhrase } = useVault();
   const { handleError } = useErrorHandler();
 
@@ -31,40 +38,13 @@ export const RemovePhraseMultiConfirm: T = ({ phrase, onRemoved }) => {
   }, [phrase, removePhrase, handleError, onRemoved]);
 
   return (
-    <RemovePhraseMultiConfirmStyled
-      key={phrase?.signature}
-      onConfirm={onConfirm}
-      confirmSteps={[
-        locale.confirmStepDeletePhrase,
-        locale.confirmStepYesIamSure,
-        locale.confirmStepDeleteIt,
-      ]}
-      cancelStep={locale.confirmStepCancelDeletion}
-    />
+      <ParanoidConfirmButton
+          {...props}
+          color="error"
+          key={phrase?.signature}
+          onConfirm={onConfirm}
+          confirmSteps={CONFIRM_STEPS}
+          cancelStep={CANCEL_STEP}
+      />
   );
 };
-
-// Styled
-
-const RemovePhraseMultiConfirmStyled = styled(ParanoidConfirmButton)`
-    ${nonSelectableContentStyle};
-
-    width: 100%;
-    height: 34px;
-    display: block;
-    cursor: pointer;
-    border: none;
-    outline: none;
-    border-radius: 6px;
-    font-size: 16px;
-    background-color: ${color.dangerLight};
-    color: ${color.textPrimaryLight};
-
-    :hover {
-        background-color: ${color.danger};
-    }
-
-    :active {
-        background-color: ${color.dangerDark};
-    }
-`;
