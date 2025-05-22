@@ -18,7 +18,7 @@ export type StateChangeCallback = (args?: OverflowComponentArgs) => void;
 interface ComponentStyleProps {
   width?: number;
   height?: number;
-  transitionDuration?: number;
+  animationDuration?: number;
 }
 
 export interface OverflowComponentProps extends ComponentStyleProps, ContainerProps {
@@ -41,24 +41,24 @@ const WORKSPACE_HEIGHT = parseInt(import.meta.env.VITE_WORKSPACE_HEIGHT ?? 0);
 // Components
 
 export const OverflowComponent: T = ({
-  children,
-  name,
-  width = WORKSPACE_WIDTH,
-  height = WORKSPACE_HEIGHT,
-  transitionDuration = 300,
-  appearance = 'bottom',
-  initialState = 'hidden',
-  beforeAppearance,
-  afterAppearance,
-  beforeDisappearance,
-  afterDisappearance,
-}) => {
+                                       children,
+                                       name,
+                                       width = WORKSPACE_WIDTH,
+                                       height = WORKSPACE_HEIGHT,
+                                       animationDuration = 300,
+                                       appearance = 'bottom',
+                                       initialState = 'hidden',
+                                       beforeAppearance,
+                                       afterAppearance,
+                                       beforeDisappearance,
+                                       afterDisappearance,
+                                     }) => {
   const [state, setState] = useState<ComponentState>(initialState);
   const { registerComponent, unregisterComponent } = useOverflowComponent();
 
   const classNames = useMemo(() => {
-    return [state, appearance].join(' ');
-  }, [state, appearance]);
+    return [name, state, appearance].join(' ');
+  }, [name, state, appearance]);
 
   const show: ComponentVisibilityTrigger = useCallback((args) => {
     return new Promise<void>((resolve) => {
@@ -67,9 +67,9 @@ export const OverflowComponent: T = ({
       setTimeout(() => {
         resolve();
         if (afterAppearance) afterAppearance(args);
-      }, transitionDuration);
+      }, animationDuration);
     });
-  }, [beforeAppearance, afterAppearance, transitionDuration]);
+  }, [beforeAppearance, afterAppearance, animationDuration]);
 
   const hide: ComponentVisibilityTrigger = useCallback((args) => {
     return new Promise<void>((resolve) => {
@@ -78,9 +78,9 @@ export const OverflowComponent: T = ({
       setTimeout(() => {
         resolve();
         if (afterDisappearance) afterDisappearance(args);
-      }, transitionDuration);
+      }, animationDuration);
     });
-  }, [beforeDisappearance, afterDisappearance, transitionDuration]);
+  }, [beforeDisappearance, afterDisappearance, animationDuration]);
 
   useEffect(() => {
     registerComponent(name, { show, hide });
@@ -88,14 +88,14 @@ export const OverflowComponent: T = ({
   }, [name, registerComponent, show, hide, unregisterComponent]);
 
   return (
-    <OverflowComponentStyled
-      className={classNames}
-      width={width}
-      height={height}
-      transitionDuration={transitionDuration}
-    >
-      {children}
-    </OverflowComponentStyled>
+      <OverflowComponentStyled
+          className={classNames}
+          width={width}
+          height={height}
+          animationDuration={animationDuration}
+      >
+        {children}
+      </OverflowComponentStyled>
   );
 };
 
@@ -103,8 +103,10 @@ export const OverflowComponent: T = ({
 
 const OverflowComponentStyled = styled.div<ComponentStyleProps>`
     position: absolute;
+    width: ${p => p.width}px;
+    height: ${p => p.height}px;
     z-index: 999;
-    transition: top ${p => p.transitionDuration}ms ease-out, left ${p => p.transitionDuration}ms ease-in-out;
+    transition: top ${p => p.animationDuration}ms ease-out, left ${p => p.animationDuration}ms ease-in-out;
 
     &.${'top'} {
         top: -${p => p.height}px;

@@ -1,14 +1,9 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useState } from 'react';
 
-import styled from '@emotion/styled';
-
-import locale from 'Assets/locale';
-import { CloseButton } from 'Components/Controls/CloseButton';
-import { DestroyVaultMultiConfirm } from 'Components/Controls/DestroyVaultMultiConfirm';
 import { OverflowComponent } from 'Components/Layout/OverflowComponent';
-import { Page } from 'Components/Layout/Page';
 import { useErrorHandler } from 'Hooks/useHandleError';
 import { useOverflowComponent } from 'Hooks/useOverflowComponent';
+import { SettingsView } from "Views/SettingsView";
 
 // Constants
 
@@ -17,33 +12,30 @@ export const SETTINGS_PAGE_NAME = 'settings-page';
 // Components
 
 export const SettingsPage = () => {
+  const [shown, setShown] = useState<boolean>(false);
   const { hideComponent } = useOverflowComponent();
   const { handleError } = useErrorHandler();
 
+
+  const beforeAppearance = useCallback(() => {
+    setShown(true);
+  }, []);
+
+  const afterDisappearance = useCallback(() => {
+    setShown(false);
+  }, []);
 
   const close = useCallback(() => {
     hideComponent(SETTINGS_PAGE_NAME).catch(handleError);
   }, [hideComponent, handleError]);
 
-  const headerControls = useMemo(() => {
-    return (<CloseButton onClick={close} />);
-  }, [close]);
-
 
   return (
-    <OverflowComponent name={SETTINGS_PAGE_NAME}>
-      <Page caption={locale.captionSettings} headerControls={headerControls}>
-        <PageContentContainer>
-          <DestroyVaultMultiConfirm displayStyle="button" />
-        </PageContentContainer>
-      </Page>
-    </OverflowComponent>
+      <OverflowComponent name={SETTINGS_PAGE_NAME}
+                         beforeAppearance={beforeAppearance}
+                         afterDisappearance={afterDisappearance}
+      >
+        {shown && <SettingsView onClose={close}/>}
+      </OverflowComponent>
   );
 };
-
-// Styled
-
-const PageContentContainer = styled.div`
-    padding: 10px 5px;
-    height: 100%;
-`;

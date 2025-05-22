@@ -14,6 +14,7 @@ export default defineConfig({
       Hooks: '/src/hooks',
       Pages: '/src/pages',
       Utils: '/src/utils',
+      Views: '/src/views',
     },
   },
 });

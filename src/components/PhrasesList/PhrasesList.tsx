@@ -1,47 +1,40 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import styled from '@emotion/styled';
 
-import { PhraseItem } from 'Components/PhrasesList/PhraseItem';
+import { PageContentContainer } from "Components/Layout/PageContentContainer";
+import { PhraseListItem } from 'Components/PhrasesList/PhraseListItem';
+import { useErrorHandler } from "Hooks/useHandleError";
+import { useOverflowComponent } from "Hooks/useOverflowComponent";
 import { Phrase, usePhrases } from 'Hooks/usePhrases';
+import { GENERATE_PASSWORD_PAGE_NAME } from "Pages/GeneratePasswordPage";
 
 // Components
 
 export const PhrasesList = () => {
-  const [selectedPhrase, setSelectedPhrase] = useState<Phrase | null>(null);
-  const { phrases } = usePhrases();
+    const { phrases } = usePhrases();
+    const { showComponent } = useOverflowComponent();
+    const { handleError } = useErrorHandler();
 
-  const onPhraseSelected = useCallback((phrase: Phrase) => {
-    setSelectedPhrase(phrase);
-  }, []);
 
-  const onPhraseUnselected = useCallback(() => {
-    setSelectedPhrase(null);
-  }, []);
+    const handlePhraseClick = useCallback((phrase: Phrase) => {
+        showComponent(GENERATE_PASSWORD_PAGE_NAME, phrase).catch(handleError);
+    }, [showComponent, handleError]);
 
-  const renderPhrases = useCallback(() => {
-    return phrases
-      .sort((p1, p2) => p1.label.localeCompare(p2.label))
-      .map((p) => (
-        <PhraseItem
-          key={p.signature}
-          phrase={p}
-          onSelected={onPhraseSelected}
-          onUnselected={onPhraseUnselected}
-          selected={selectedPhrase === p}
-        />
-      ));
-  }, [phrases, onPhraseSelected, onPhraseUnselected, selectedPhrase]);
+    const renderPhrases = useCallback(() => {
+        return phrases
+            .sort((p1, p2) => p1.label.localeCompare(p2.label))
+            .map((p) => (<PhraseListItem key={p.signature} phrase={p} onClick={handlePhraseClick}/>));
+    }, [phrases, handlePhraseClick]);
 
-  return (
-    <PhrasesListStyled>
-      {renderPhrases()}
-    </PhrasesListStyled>
-  );
+    return (
+        <PhrasesListStyled>
+            {renderPhrases()}
+        </PhrasesListStyled>
+    );
 };
 
-const PhrasesListStyled = styled.div`
+const PhrasesListStyled = styled(PageContentContainer)`
     height: 100%;
     overflow-y: auto;
-    padding: 10px 5px;
 `;
