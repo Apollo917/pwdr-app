@@ -2,6 +2,7 @@ import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 
 import styled from '@emotion/styled';
 
+import { useGlobalDimensions } from "Hooks/useGlobalDimensions";
 import {
   ComponentVisibilityTrigger,
   OverflowComponentArgs,
@@ -15,9 +16,16 @@ export type AppearanceType = 'top' | 'bottom' | 'left' | 'right';
 export type ComponentState = 'shown' | 'hidden';
 export type StateChangeCallback = (args?: OverflowComponentArgs) => void;
 
+interface SizeStyleProps {
+  width: number;
+  height: number;
+}
+
+interface PositionStyleProps {
+  left: number;
+}
+
 interface ComponentStyleProps {
-  width?: number;
-  height?: number;
   animationDuration?: number;
 }
 
@@ -33,18 +41,11 @@ export interface OverflowComponentProps extends ComponentStyleProps, ContainerPr
 
 type T = (props: OverflowComponentProps) => ReactElement;
 
-// Constants
-
-const WORKSPACE_WIDTH = parseInt(import.meta.env.VITE_WORKSPACE_WIDTH ?? 0);
-const WORKSPACE_HEIGHT = parseInt(import.meta.env.VITE_WORKSPACE_HEIGHT ?? 0);
-
 // Components
 
 export const OverflowComponent: T = ({
                                        children,
                                        name,
-                                       width = WORKSPACE_WIDTH,
-                                       height = WORKSPACE_HEIGHT,
                                        animationDuration = 300,
                                        appearance = 'bottom',
                                        initialState = 'hidden',
@@ -54,7 +55,9 @@ export const OverflowComponent: T = ({
                                        afterDisappearance,
                                      }) => {
   const [state, setState] = useState<ComponentState>(initialState);
+  const { width, height, left } = useGlobalDimensions();
   const { registerComponent, unregisterComponent } = useOverflowComponent();
+
 
   const classNames = useMemo(() => {
     return [name, state, appearance].join(' ');
@@ -92,6 +95,7 @@ export const OverflowComponent: T = ({
           className={classNames}
           width={width}
           height={height}
+          left={left}
           animationDuration={animationDuration}
       >
         {children}
@@ -101,7 +105,7 @@ export const OverflowComponent: T = ({
 
 // Styled
 
-const OverflowComponentStyled = styled.div<ComponentStyleProps>`
+const OverflowComponentStyled = styled.div<ComponentStyleProps & SizeStyleProps & PositionStyleProps>`
     position: absolute;
     width: ${p => p.width}px;
     height: ${p => p.height}px;

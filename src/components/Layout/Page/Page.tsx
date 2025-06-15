@@ -5,6 +5,7 @@ import { Close } from '@mui/icons-material';
 import { IconButton, Typography } from '@mui/material';
 
 import { PwdrLogoSvg } from 'Assets/img/PwdrLogoSvg';
+import { useGlobalDimensions } from "Hooks/useGlobalDimensions";
 import { color } from 'Utils/style';
 import { ContainerProps } from 'Utils/types';
 
@@ -18,73 +19,91 @@ interface PageStyledProps extends PageSectionProps {
   width: number;
 }
 
-export interface PageProps extends ContainerProps {
+interface FooterProps {
+  footerControls?: ReactElement;
+  dropFooterShadow?: boolean;
+}
+
+export interface PageProps extends ContainerProps, FooterProps {
   caption: string;
   className?: string;
   onClose?: () => void;
-  footerControls?: ReactElement;
 }
 
 type T = (props: PageProps) => ReactElement;
 
 // Constants
 
-const WORKSPACE_WIDTH = parseInt(import.meta.env.VITE_WORKSPACE_WIDTH ?? 0);
-const WORKSPACE_HEIGHT = parseInt(import.meta.env.VITE_WORKSPACE_HEIGHT ?? 0);
-const HEADER_HEIGHT = 40;
-const FOOTER_HEIGHT = 55;
+const MAX_WIDTH = '600px';
 
 // Components
 
-export const Page: T = ({ children, caption, className, onClose, footerControls }) => {
-
-  const contentHeight = useMemo(() => {
-    return WORKSPACE_HEIGHT - HEADER_HEIGHT - (footerControls ? FOOTER_HEIGHT : 0);
-  }, [footerControls]);
+export const Page: T = ({ children, caption, className, onClose, footerControls, dropFooterShadow }) => {
+  const { width, height } = useGlobalDimensions();
 
   const renderFooter = useMemo(() => {
-    if (footerControls) return <Footer height={FOOTER_HEIGHT}>{footerControls}</Footer>;
-  }, [footerControls]);
+    if (!footerControls) return;
+
+    return (
+        <Footer dropFooterShadow={dropFooterShadow}>
+          <FooterContent>
+            {footerControls}
+          </FooterContent>
+        </Footer>
+    )
+
+  }, [dropFooterShadow, footerControls]);
 
 
   return (
-      <PageStyled className={className} height={WORKSPACE_HEIGHT} width={WORKSPACE_WIDTH}>
-        <Header height={HEADER_HEIGHT}>
-          <div>
-            <PwdrLogoSvg size={25}/>
-            <Typography fontSize={22} fontWeight={500} display="inline" color="#fff">
-              {caption}
-            </Typography>
-          </div>
-          {
-              onClose && (
-                  <IconButtonStyled tabIndex={-1} size="small" aria-label="close page" onClick={onClose}>
-                    <Close/>
-                  </IconButtonStyled>
-              )
-          }
+      <PageStyled className={className} width={width} height={height}>
+        <Header>
+          <HeaderContent>
+            <div>
+              <PwdrLogoSvg size={25}/>
+              <Typography fontSize={22} fontWeight={500} display="inline" color="#fff">
+                {caption}
+              </Typography>
+            </div>
+            {
+                onClose && (
+                    <IconButtonStyled tabIndex={-1} size="small" aria-label="close page" onClick={onClose}>
+                      <Close/>
+                    </IconButtonStyled>
+                )
+            }
+          </HeaderContent>
         </Header>
-        <Content height={contentHeight}>{children}</Content>
+        <Content>
+          <ContentContent>
+            {children}
+          </ContentContent>
+        </Content>
         {renderFooter}
       </PageStyled>
   );
 };
 
+// Styled
+
 const PageStyled = styled.div<PageStyledProps>`
-    width: ${(p) => p.width}px;
-    max-width: ${(p) => p.width}px;
-    height: ${(p) => p.height}px;
-    max-height: ${(p) => p.height}px;
-    background-color: #f9f9f9;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
     overflow: hidden;
+    background-color: #f9f9f9;
 `;
 
-const Header = styled.header<PageSectionProps>`
-    height: ${(p) => p.height}px;
+const Header = styled.header`
+    flex: 0 0 auto;
+    height: 40px;
 
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 
     padding: 0 10px;
 
@@ -93,16 +112,47 @@ const Header = styled.header<PageSectionProps>`
     box-shadow: 0 1px 10px 0 ${color.shadowDark};
 `;
 
-const Content = styled.div<PageSectionProps>`
-    height: ${(p) => p.height}px;
+const HeaderContent = styled.div`
+    width: 100%;
+    max-width: ${MAX_WIDTH};
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `;
 
-const Footer = styled.footer<PageSectionProps>`
-    height: ${(p) => p.height}px;
+const Content = styled.div`
+    flex: 1 1 auto;
+    
+    display: flex;
+    justify-content: center;
+
+    overflow-y: auto;
+`;
+
+const ContentContent = styled.div`
+    width: 100%;
+    max-width: ${MAX_WIDTH};
+    height: 100%;
+`;
+
+const Footer = styled.footer<FooterProps>`
+    flex: 0 0 auto;
+    height: 55px;
+
+    display: flex;
+    justify-content: center;
+
     box-shadow: 0 -1px 10px 0 ${color.shadowDark};
+    ${({ dropFooterShadow }) => dropFooterShadow === false ? 'box-shadow: none;' : 'inherit'};
 `;
 
-// Styled
+const FooterContent = styled.div`
+    width: 100%;
+    max-width: ${MAX_WIDTH};
+    height: 100%;
+`;
 
 const IconButtonStyled = styled(IconButton)`
     color: #b7becb;

@@ -69,7 +69,7 @@ export const CreateVaultPage = () => {
   return (
       <Page caption="pwdr">
         <VaultPageLayout prompt={locale.createNewVaultPrompt}>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} width="100%" maxWidth="400px" autoComplete="off">
             <Controller name="pin" control={control} render={({ field, fieldState }) => (
                 <PasswordField {...field}
                                inputRef={autofocusRef}

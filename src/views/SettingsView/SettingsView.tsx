@@ -41,7 +41,7 @@ export const SettingsView: T = ({ onClose }) => {
 
   return (
       <Page caption={locale.captionSettings} onClose={onClose}>
-        <PageContentContainerStyled>
+        <PageContentContainer>
 
           <Accordion expanded={expanded === PWD_LENGTH} onChange={handleExpansion}>
             <AccordionSummary id={PWD_LENGTH} aria-controls={PWD_LENGTH} expandIcon={<ExpandMore/>}>
@@ -79,17 +79,12 @@ export const SettingsView: T = ({ onClose }) => {
             </AccordionDetailsStyled>
           </Accordion>
 
-        </PageContentContainerStyled>
+        </PageContentContainer>
       </Page>
   );
 }
 
 // Styled
-
-const PageContentContainerStyled = styled(PageContentContainer)`
-    height: 100%;
-    overflow-y: auto;
-`;
 
 const AccordionDetailsStyled = styled(AccordionDetails)`
     padding: 8px;

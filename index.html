@@ -1,10 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/icon.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pwdr</title>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/png" href="/icon.png"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>pwdr</title>
+    <style>
+        html,
+        body,
+        #root {
+            width: %VITE_APP_WIDTH%;
+            height: %VITE_APP_HEIGHT%;
+        }
+    </style>
+    %VITE_TELEGRAM_SCRIPT%
 </head>
 <body>
 <div id="root"></div>

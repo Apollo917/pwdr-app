@@ -79,7 +79,7 @@ export const UnlockVaultPage = () => {
   return (
       <Page caption="pwdr">
         <VaultPageLayout prompt={locale.unlockVaultPrompt}>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} width="100%" maxWidth="400px" autoComplete="off">
             <Controller name="pin" control={control} render={({ field, fieldState }) => (
                 <PasswordField {...field}
                                inputRef={autofocusRef}
@@ -94,11 +94,11 @@ export const UnlockVaultPage = () => {
             <Button type="submit" variant="contained" loading={isLoading} disabled={!isValid} fullWidth>
               {locale.btnUnlock}
             </Button>
+            <Spacer size={10}/>
+            <DestroyVaultContainer>
+              <DestroyVaultMultiConfirm size="small"/>
+            </DestroyVaultContainer>
           </Box>
-          <Spacer size={10}/>
-          <DestroyVaultContainer>
-            <DestroyVaultMultiConfirm size="small"/>
-          </DestroyVaultContainer>
         </VaultPageLayout>
       </Page>
   );
