@@ -41,7 +41,7 @@ export const PinChangeSettings = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { changePin, lockVault } = useVault();
   const { handleError } = useErrorHandler();
-  const { control, handleSubmit, reset, setError, formState: { isValid } } = useForm<PinChangeSettingsFormData>({
+  const { control, handleSubmit, setValue, setError, formState: { isValid } } = useForm<PinChangeSettingsFormData>({
     mode: 'all',
     resolver: yupResolver(formValidationSchema),
     defaultValues: {
@@ -53,9 +53,11 @@ export const PinChangeSettings = () => {
 
 
   const resetFormTempState = useCallback(() => {
-    reset();
+    setValue('currentPin', '');
+    setValue('newPin', '');
+    setValue('newPinConfirm', '');
     setLoading(false);
-  }, [reset]);
+  }, [setValue]);
 
   const onSubmit = useCallback(({ currentPin, newPin }: PinChangeSettingsFormData) => {
     setLoading(true);

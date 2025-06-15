@@ -69,10 +69,18 @@ export const EditPhraseView: T = ({ phrase, onClose }) => {
         .finally(() => setIsLoading(false));
   }, [phrase, editPhrase, onClose, handleError]);
 
+  const footer = useMemo(() => {
+    return (
+        <RemovePhraseControlContainer>
+          <RemovePhraseMultiConfirm phrase={phrase} onRemoved={onClose} variant="contained" fullWidth/>
+        </RemovePhraseControlContainer>
+    );
+  }, [onClose, phrase]);
+
 
   return (
-      <Page caption={locale.captionEditPhrase} onClose={onClose}>
-        <PageContentContainerStyled>
+      <Page caption={locale.captionEditPhrase} onClose={onClose} footerControls={footer} dropFooterShadow={false}>
+        <PageContentContainer>
           <Box component="form" onSubmit={handleSubmit(onSubmit)} autoComplete="off">
             <Controller name="label" control={control} render={({ field, fieldState }) => (
                 <TextField {...field}
@@ -94,17 +102,20 @@ export const EditPhraseView: T = ({ phrase, onClose }) => {
               {locale.btnSaveChanges}
             </Button>
           </Box>
-          <RemovePhraseMultiConfirm phrase={phrase} onRemoved={onClose} variant="contained" fullWidth/>
-        </PageContentContainerStyled>
+        </PageContentContainer>
       </Page>
   );
 }
 
 // Styled
 
-const PageContentContainerStyled = styled(PageContentContainer)`
+const RemovePhraseControlContainer = styled.div`
+    width: 100%;
     height: 100%;
+
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 10px;
 `;

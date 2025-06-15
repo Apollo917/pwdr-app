@@ -1,7 +1,5 @@
 import { useCallback } from 'react';
 
-import styled from '@emotion/styled';
-
 import { PageContentContainer } from "Components/Layout/PageContentContainer";
 import { PhraseListItem } from 'Components/PhrasesList/PhraseListItem';
 import { useErrorHandler } from "Hooks/useHandleError";
@@ -28,13 +26,8 @@ export const PhrasesList = () => {
     }, [phrases, handlePhraseClick]);
 
     return (
-        <PhrasesListStyled>
+        <PageContentContainer>
             {renderPhrases()}
-        </PhrasesListStyled>
+        </PageContentContainer>
     );
 };
-
-const PhrasesListStyled = styled(PageContentContainer)`
-    height: 100%;
-    overflow-y: auto;
-`;

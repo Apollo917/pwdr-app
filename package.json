@@ -2,7 +2,7 @@
   "name": "pwdr-app",
   "author": "Apollo917",
   "homepage": "https://github.com/Apollo917/pwdr-app",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "description": "Generate strong, repeatable passwords using a secret phrase. No servers. Your data stays encrypted and private on your device.",
   "maintainers": [
@@ -31,7 +31,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build": "tsc -b && vite build",
-    "build-chrome-extension": "tsc -b .chrome-extension && vite build && node .chrome-extension/build.js"
+    "build:chrome-extension": "tsc -b .chrome-extension && vite build --mode chrome-extension && node .chrome-extension/build.js",
+    "build:telegram": "tsc -b && vite build --mode telegram"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
