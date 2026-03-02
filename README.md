@@ -2,48 +2,64 @@
 
 # pwdr app
 
-Generate strong, repeatable passwords using a secret phrase and key — all offline, with zero tracking
+Generate, don't store!
 
 ![pwdr app logo](.readme/logo-w-bg.png)
 
 </div>
 
-## ✨ Main features
+## 🔑 pwdr app
 
-### 🔑 Deterministic Password Generation
+**The Stateless Password Generator. Your brain is the database**
 
-Generate the same strong password every time using a combination of your secret phrase and key
+`pwdr` is a hybrid password generator designed for those who want to move away from cloud-synced vaults and physical notebooks. Instead of storing passwords, you **calculate** them using a Master Secret and a logical Key system
 
-### 🔒 Encrypted Local Storage
+## 🌍 Anywhere You Are
 
-Your secret phrases are encrypted and securely stored on your device
+`pwdr` is designed to be available wherever you need a password
 
-### 🧠 Convenient Access
+- 🌐 **Web:** [Use it as a standalone Web App](https://pwdr.telegram.apollo.pub/)
+- **🧩 Chrome Extension:** [Generate and copy passwords directly from your browser toolbar](https://chromewebstore.google.com/detail/oajipmekhnmmmhhhhlngdnjnfkmeodha?utm_source=item-share-cb)
+- **🤖 Telegram Mini App:** [Access your "vault" on the go through Telegram](https://t.me/pwdrAppBot)
 
-Unlock your secret phrase vault with a PIN — no need to retype your secret phrase each time
+## 💡 The Philosophy: Mental Composition
 
-### 🚫 No Servers, No Tracking
+The core idea is to eliminate the need to "save" anything. By using a **mental system** for your keys, you carry your entire password vault in your head without actually memorizing hundreds of strings
 
-Everything happens locally on your device. No data is sent or stored externally
+1. **The Secret Phrase:** One strong, complex phrase you never forget
+2. **The Key System:** A logical rule you create for yourself to generate keys on the fly
+   - _Example:_ `[Service Name] + [Year of Account] + [A Personal Keyword]`
+   - _Resulting Keys:_ `github2024coffee`, `gmail2018coffee`, `netflix2021coffee`
+3. **The Output:** `pwdr` processes these to generate high-entropy, unique passwords for every service
+
+## ✨ Main Features
+
+- 🧠 **100% Deterministic:** Same inputs, same output. Every single time
+- 🛡️ **Identity Signature:** Every Secret Phrase produces a **unique visual/textual signature.** This allows you to instantly verify you haven't made a typo in your master phrase before generating passwords
+- ⚙️ **Tunable Local Security:** Choose how heavily to encrypt your Secret Phrase locally. Higher strength increases protection against brute-force attacks on your device's storage at the cost of a slightly longer generation time
+- 🔒 **Encrypted Local Vault:** For convenience, your Secret Phrase can be AES-encrypted and stored in your browser's local storage
+- ⚡ **PIN Quick-Unlock:** Use a simple PIN to unlock your vault so you don't have to type your long Secret Phrase for every new password
+- 🚫 **Offline & Private:** No servers, no tracking, and no data collection. It works entirely in your browser
 
 ## 🛠 How It Works
 
-- Set a PIN to protect your encrypted secret phrase vault
-- Unlock your vault using the PIN
-- Add a secret phrase — it's encrypted and stored locally on your device
-- Enter a secret key to generate a consistent, strong password
-- Copy the generated password — ready to use
+1. **Initialize:** Set a master PIN to lock the app interface
+2. **Enter Secret:** Input your "Master Secret Phrase"
+3. **Verify Signature:** Check the Signature on screen. If it matches your "usual" signature, you know your input is 100% correct.
+4. **Compose Key:** Use your personal mental logic to enter a Key for the service you need.
+5. **Copy & Go:** Use the generated password. No saving required.
 
 ## 📦 Under the Hood
 
-This app is powered by [pwdr](https://www.npmjs.com/package/pwdr), a lightweight and secure npm package that enables
-deterministic password generation based on a secret phrase and key combination
+As a tool built by a developer for users who value architectural transparency, the engine is fully open-source
 
-- [pwdr npm package](https://www.npmjs.com/package/pwdr)
-- [pwdr GitHub repository](https://github.com/Apollo917/pwdr)
+- **Engine:**
+  - [pwdr npm package](https://www.npmjs.com/package/pwdr)
+  - [pwdr GitHub repository](https://github.com/Apollo917/pwdr)
+- **Security:** Uses cryptographic hashing to ensure that even a tiny change in the Key results in a completely different password
 
-## 🚧 Limitations
+## ⚠️ Important Considerations
 
-Data is stored only in your browser's local storage. Clearing browser data will remove your encrypted secret phrase.
-
-**Make sure to remember your password and secret phrase — there is no recovery method**
+- **Statelessness:** No data is synced. If you change your Master Secret, all passwords change
+- **Persistence:** Data is kept in local storage. If you clear your browser data, you will need to re-input your Master Secret Phrase
+- **Total Responsibility:** There is no "Recovery" or "Forgot Password" link. **Your memory is the only backup**
